@@ -1,6 +1,8 @@
 use rapina::schemars::{self, JsonSchema};
 use serde::{Deserialize, Serialize};
 
+use crate::api::v1::tags::dto::TagResponse;
+
 #[derive(Deserialize, JsonSchema)]
 pub struct CreateTestimonialRequest {
     pub author_name: String,
@@ -80,6 +82,7 @@ pub struct TestimonialResponse {
     pub language: Option<String>,
     pub is_approved: bool,
     pub is_featured: bool,
+    pub tags: Vec<TagResponse>,
     pub created_at: String,
     pub updated_at: String,
 }

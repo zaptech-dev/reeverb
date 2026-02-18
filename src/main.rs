@@ -5,6 +5,7 @@ use rapina::schemars;
 
 use reeverb::api::v1::auth;
 use reeverb::api::v1::projects;
+use reeverb::api::v1::tags;
 use reeverb::api::v1::testimonials;
 
 #[derive(Clone, Config)]
@@ -48,7 +49,10 @@ async fn main() -> std::io::Result<()> {
         .group("/api/v1/auth", auth::routes())
         .group("/api/v1/projects", projects::routes())
         .group("/api/v1/projects", testimonials::project_routes())
-        .group("/api/v1/testimonials", testimonials::routes());
+        .group("/api/v1/projects", tags::project_routes())
+        .group("/api/v1/tags", tags::routes())
+        .group("/api/v1/testimonials", testimonials::routes())
+        .group("/api/v1/testimonials", tags::testimonial_tag_routes());
 
     let mut app = Rapina::new()
         .with_tracing(TracingConfig::new())
