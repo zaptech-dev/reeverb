@@ -1,0 +1,922 @@
+//! Migration: convert pks to serial add pid
+//!
+//! Drops all tables and recreates them with:
+//! - id: SERIAL PRIMARY KEY (internal)
+//! - pid: UUID UNIQUE NOT NULL (external/API)
+//!
+//! Safe to run because the project has no production data yet.
+
+use rapina::migration::prelude::*;
+use rapina::sea_orm_migration;
+
+#[derive(DeriveMigrationName)]
+pub struct Migration;
+
+#[async_trait]
+impl MigrationTrait for Migration {
+    async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
+        // Drop in reverse FK order
+        let tables = [
+            "analytics_events",
+            "api_keys",
+            "import_sources",
+            "testimonial_tags",
+            "tags",
+            "widgets",
+            "forms",
+            "testimonials",
+            "projects",
+            "users",
+        ];
+        for table in tables {
+            manager
+                .drop_table(
+                    Table::drop()
+                        .table(Alias::new(table))
+                        .if_exists()
+                        .cascade()
+                        .to_owned(),
+                )
+                .await?;
+        }
+
+        // --- Users ---
+        manager
+            .create_table(
+                Table::create()
+                    .table(Users::Table)
+                    .col(
+                        ColumnDef::new(Users::Id)
+                            .integer()
+                            .not_null()
+                            .auto_increment()
+                            .primary_key(),
+                    )
+                    .col(ColumnDef::new(Users::Pid).uuid().not_null().unique_key())
+                    .col(
+                        ColumnDef::new(Users::Email)
+                            .string_len(255)
+                            .not_null()
+                            .unique_key(),
+                    )
+                    .col(ColumnDef::new(Users::PasswordHash).string_len(255))
+                    .col(ColumnDef::new(Users::Name).string_len(255))
+                    .col(ColumnDef::new(Users::AvatarUrl).text())
+                    .col(ColumnDef::new(Users::OauthProvider).string_len(50))
+                    .col(ColumnDef::new(Users::OauthId).string_len(255))
+                    .col(
+                        ColumnDef::new(Users::CreatedAt)
+                            .timestamp_with_time_zone()
+                            .not_null()
+                            .default(Expr::current_timestamp()),
+                    )
+                    .col(
+                        ColumnDef::new(Users::UpdatedAt)
+                            .timestamp_with_time_zone()
+                            .not_null()
+                            .default(Expr::current_timestamp()),
+                    )
+                    .to_owned(),
+            )
+            .await?;
+
+        // --- Projects ---
+        manager
+            .create_table(
+                Table::create()
+                    .table(Projects::Table)
+                    .col(
+                        ColumnDef::new(Projects::Id)
+                            .integer()
+                            .not_null()
+                            .auto_increment()
+                            .primary_key(),
+                    )
+                    .col(ColumnDef::new(Projects::Pid).uuid().not_null().unique_key())
+                    .col(ColumnDef::new(Projects::UserId).integer().not_null())
+                    .col(ColumnDef::new(Projects::Name).string_len(255).not_null())
+                    .col(
+                        ColumnDef::new(Projects::Slug)
+                            .string_len(255)
+                            .not_null()
+                            .unique_key(),
+                    )
+                    .col(ColumnDef::new(Projects::LogoUrl).text())
+                    .col(ColumnDef::new(Projects::WebsiteUrl).text())
+                    .col(
+                        ColumnDef::new(Projects::CreatedAt)
+                            .timestamp_with_time_zone()
+                            .not_null()
+                            .default(Expr::current_timestamp()),
+                    )
+                    .col(
+                        ColumnDef::new(Projects::UpdatedAt)
+                            .timestamp_with_time_zone()
+                            .not_null()
+                            .default(Expr::current_timestamp()),
+                    )
+                    .foreign_key(
+                        ForeignKey::create()
+                            .from(Projects::Table, Projects::UserId)
+                            .to(Users::Table, Users::Id)
+                            .on_delete(ForeignKeyAction::Cascade),
+                    )
+                    .to_owned(),
+            )
+            .await?;
+
+        // --- Testimonials ---
+        manager
+            .create_table(
+                Table::create()
+                    .table(Testimonials::Table)
+                    .col(
+                        ColumnDef::new(Testimonials::Id)
+                            .integer()
+                            .not_null()
+                            .auto_increment()
+                            .primary_key(),
+                    )
+                    .col(
+                        ColumnDef::new(Testimonials::Pid)
+                            .uuid()
+                            .not_null()
+                            .unique_key(),
+                    )
+                    .col(ColumnDef::new(Testimonials::ProjectId).integer().not_null())
+                    .col(
+                        ColumnDef::new(Testimonials::Type)
+                            .string_len(20)
+                            .not_null()
+                            .default("text"),
+                    )
+                    .col(ColumnDef::new(Testimonials::Content).text())
+                    .col(ColumnDef::new(Testimonials::Rating).small_integer())
+                    .col(
+                        ColumnDef::new(Testimonials::AuthorName)
+                            .string_len(255)
+                            .not_null(),
+                    )
+                    .col(ColumnDef::new(Testimonials::AuthorEmail).string_len(255))
+                    .col(ColumnDef::new(Testimonials::AuthorTitle).string_len(255))
+                    .col(ColumnDef::new(Testimonials::AuthorAvatarUrl).text())
+                    .col(ColumnDef::new(Testimonials::AuthorCompany).string_len(255))
+                    .col(ColumnDef::new(Testimonials::AuthorUrl).text())
+                    .col(ColumnDef::new(Testimonials::VideoUrl).text())
+                    .col(ColumnDef::new(Testimonials::VideoThumbnailUrl).text())
+                    .col(ColumnDef::new(Testimonials::VideoDurationSeconds).integer())
+                    .col(ColumnDef::new(Testimonials::Transcription).text())
+                    .col(
+                        ColumnDef::new(Testimonials::Source)
+                            .string_len(50)
+                            .default("form"),
+                    )
+                    .col(ColumnDef::new(Testimonials::SourcePlatform).string_len(50))
+                    .col(ColumnDef::new(Testimonials::SourceUrl).text())
+                    .col(ColumnDef::new(Testimonials::SourceId).string_len(255))
+                    .col(ColumnDef::new(Testimonials::Sentiment).string_len(20))
+                    .col(ColumnDef::new(Testimonials::SentimentScore).float())
+                    .col(ColumnDef::new(Testimonials::Language).string_len(10))
+                    .col(
+                        ColumnDef::new(Testimonials::IsApproved)
+                            .boolean()
+                            .not_null()
+                            .default(false),
+                    )
+                    .col(
+                        ColumnDef::new(Testimonials::IsFeatured)
+                            .boolean()
+                            .not_null()
+                            .default(false),
+                    )
+                    .col(
+                        ColumnDef::new(Testimonials::CreatedAt)
+                            .timestamp_with_time_zone()
+                            .not_null()
+                            .default(Expr::current_timestamp()),
+                    )
+                    .col(
+                        ColumnDef::new(Testimonials::UpdatedAt)
+                            .timestamp_with_time_zone()
+                            .not_null()
+                            .default(Expr::current_timestamp()),
+                    )
+                    .foreign_key(
+                        ForeignKey::create()
+                            .from(Testimonials::Table, Testimonials::ProjectId)
+                            .to(Projects::Table, Projects::Id)
+                            .on_delete(ForeignKeyAction::Cascade),
+                    )
+                    .to_owned(),
+            )
+            .await?;
+
+        manager
+            .create_index(
+                Index::create()
+                    .name("idx_testimonials_project")
+                    .table(Testimonials::Table)
+                    .col(Testimonials::ProjectId)
+                    .to_owned(),
+            )
+            .await?;
+        manager
+            .create_index(
+                Index::create()
+                    .name("idx_testimonials_approved")
+                    .table(Testimonials::Table)
+                    .col(Testimonials::ProjectId)
+                    .col(Testimonials::IsApproved)
+                    .to_owned(),
+            )
+            .await?;
+        manager
+            .create_index(
+                Index::create()
+                    .name("idx_testimonials_featured")
+                    .table(Testimonials::Table)
+                    .col(Testimonials::ProjectId)
+                    .col(Testimonials::IsFeatured)
+                    .to_owned(),
+            )
+            .await?;
+
+        // --- Tags ---
+        manager
+            .create_table(
+                Table::create()
+                    .table(Tags::Table)
+                    .col(
+                        ColumnDef::new(Tags::Id)
+                            .integer()
+                            .not_null()
+                            .auto_increment()
+                            .primary_key(),
+                    )
+                    .col(ColumnDef::new(Tags::Pid).uuid().not_null().unique_key())
+                    .col(ColumnDef::new(Tags::ProjectId).integer().not_null())
+                    .col(ColumnDef::new(Tags::Name).string_len(100).not_null())
+                    .col(ColumnDef::new(Tags::Color).string_len(7))
+                    .foreign_key(
+                        ForeignKey::create()
+                            .from(Tags::Table, Tags::ProjectId)
+                            .to(Projects::Table, Projects::Id)
+                            .on_delete(ForeignKeyAction::Cascade),
+                    )
+                    .to_owned(),
+            )
+            .await?;
+        manager
+            .create_index(
+                Index::create()
+                    .name("idx_tags_project_name")
+                    .table(Tags::Table)
+                    .col(Tags::ProjectId)
+                    .col(Tags::Name)
+                    .unique()
+                    .to_owned(),
+            )
+            .await?;
+
+        // --- Testimonial Tags ---
+        manager
+            .create_table(
+                Table::create()
+                    .table(TestimonialTags::Table)
+                    .col(
+                        ColumnDef::new(TestimonialTags::TestimonialId)
+                            .integer()
+                            .not_null(),
+                    )
+                    .col(ColumnDef::new(TestimonialTags::TagId).integer().not_null())
+                    .primary_key(
+                        Index::create()
+                            .col(TestimonialTags::TestimonialId)
+                            .col(TestimonialTags::TagId),
+                    )
+                    .foreign_key(
+                        ForeignKey::create()
+                            .from(TestimonialTags::Table, TestimonialTags::TestimonialId)
+                            .to(Testimonials::Table, Testimonials::Id)
+                            .on_delete(ForeignKeyAction::Cascade),
+                    )
+                    .foreign_key(
+                        ForeignKey::create()
+                            .from(TestimonialTags::Table, TestimonialTags::TagId)
+                            .to(Tags::Table, Tags::Id)
+                            .on_delete(ForeignKeyAction::Cascade),
+                    )
+                    .to_owned(),
+            )
+            .await?;
+
+        // --- Forms ---
+        manager
+            .create_table(
+                Table::create()
+                    .table(Forms::Table)
+                    .col(
+                        ColumnDef::new(Forms::Id)
+                            .integer()
+                            .not_null()
+                            .auto_increment()
+                            .primary_key(),
+                    )
+                    .col(ColumnDef::new(Forms::Pid).uuid().not_null().unique_key())
+                    .col(ColumnDef::new(Forms::ProjectId).integer().not_null())
+                    .col(ColumnDef::new(Forms::Name).string_len(255).not_null())
+                    .col(
+                        ColumnDef::new(Forms::Slug)
+                            .string_len(255)
+                            .not_null()
+                            .unique_key(),
+                    )
+                    .col(ColumnDef::new(Forms::Headline).text())
+                    .col(ColumnDef::new(Forms::Description).text())
+                    .col(
+                        ColumnDef::new(Forms::Questions)
+                            .json_binary()
+                            .not_null()
+                            .default("[]"),
+                    )
+                    .col(
+                        ColumnDef::new(Forms::AllowVideo)
+                            .boolean()
+                            .not_null()
+                            .default(true),
+                    )
+                    .col(
+                        ColumnDef::new(Forms::AllowText)
+                            .boolean()
+                            .not_null()
+                            .default(true),
+                    )
+                    .col(
+                        ColumnDef::new(Forms::RequireRating)
+                            .boolean()
+                            .not_null()
+                            .default(false),
+                    )
+                    .col(ColumnDef::new(Forms::LogoUrl).text())
+                    .col(
+                        ColumnDef::new(Forms::AccentColor)
+                            .string_len(7)
+                            .not_null()
+                            .default("#6366f1"),
+                    )
+                    .col(
+                        ColumnDef::new(Forms::BackgroundColor)
+                            .string_len(7)
+                            .not_null()
+                            .default("#ffffff"),
+                    )
+                    .col(
+                        ColumnDef::new(Forms::ThankYouTitle)
+                            .text()
+                            .default("Thank you!"),
+                    )
+                    .col(ColumnDef::new(Forms::ThankYouMessage).text())
+                    .col(ColumnDef::new(Forms::ThankYouCtaText).string_len(255))
+                    .col(ColumnDef::new(Forms::ThankYouCtaUrl).text())
+                    .col(
+                        ColumnDef::new(Forms::IncentiveEnabled)
+                            .boolean()
+                            .not_null()
+                            .default(false),
+                    )
+                    .col(ColumnDef::new(Forms::IncentiveDescription).text())
+                    .col(
+                        ColumnDef::new(Forms::ShareEnabled)
+                            .boolean()
+                            .not_null()
+                            .default(false),
+                    )
+                    .col(ColumnDef::new(Forms::ShareMessage).text())
+                    .col(
+                        ColumnDef::new(Forms::IsActive)
+                            .boolean()
+                            .not_null()
+                            .default(true),
+                    )
+                    .col(
+                        ColumnDef::new(Forms::SubmissionCount)
+                            .integer()
+                            .not_null()
+                            .default(0),
+                    )
+                    .col(
+                        ColumnDef::new(Forms::CreatedAt)
+                            .timestamp_with_time_zone()
+                            .not_null()
+                            .default(Expr::current_timestamp()),
+                    )
+                    .col(
+                        ColumnDef::new(Forms::UpdatedAt)
+                            .timestamp_with_time_zone()
+                            .not_null()
+                            .default(Expr::current_timestamp()),
+                    )
+                    .foreign_key(
+                        ForeignKey::create()
+                            .from(Forms::Table, Forms::ProjectId)
+                            .to(Projects::Table, Projects::Id)
+                            .on_delete(ForeignKeyAction::Cascade),
+                    )
+                    .to_owned(),
+            )
+            .await?;
+
+        // --- Widgets ---
+        manager
+            .create_table(
+                Table::create()
+                    .table(Widgets::Table)
+                    .col(
+                        ColumnDef::new(Widgets::Id)
+                            .integer()
+                            .not_null()
+                            .auto_increment()
+                            .primary_key(),
+                    )
+                    .col(ColumnDef::new(Widgets::Pid).uuid().not_null().unique_key())
+                    .col(ColumnDef::new(Widgets::ProjectId).integer().not_null())
+                    .col(ColumnDef::new(Widgets::Name).string_len(255).not_null())
+                    .col(
+                        ColumnDef::new(Widgets::WidgetType)
+                            .string_len(50)
+                            .not_null(),
+                    )
+                    .col(ColumnDef::new(Widgets::TagFilter).json_binary())
+                    .col(ColumnDef::new(Widgets::MinRating).small_integer())
+                    .col(
+                        ColumnDef::new(Widgets::FeaturedOnly)
+                            .boolean()
+                            .not_null()
+                            .default(false),
+                    )
+                    .col(
+                        ColumnDef::new(Widgets::MaxTestimonials)
+                            .integer()
+                            .not_null()
+                            .default(20),
+                    )
+                    .col(
+                        ColumnDef::new(Widgets::Theme)
+                            .string_len(20)
+                            .not_null()
+                            .default("light"),
+                    )
+                    .col(
+                        ColumnDef::new(Widgets::AccentColor)
+                            .string_len(7)
+                            .not_null()
+                            .default("#6366f1"),
+                    )
+                    .col(
+                        ColumnDef::new(Widgets::BorderRadius)
+                            .integer()
+                            .not_null()
+                            .default(8),
+                    )
+                    .col(ColumnDef::new(Widgets::FontFamily).string_len(100))
+                    .col(ColumnDef::new(Widgets::CustomCss).text())
+                    .col(
+                        ColumnDef::new(Widgets::Autoplay)
+                            .boolean()
+                            .not_null()
+                            .default(true),
+                    )
+                    .col(
+                        ColumnDef::new(Widgets::AutoplaySpeed)
+                            .integer()
+                            .not_null()
+                            .default(5000),
+                    )
+                    .col(
+                        ColumnDef::new(Widgets::ShowRating)
+                            .boolean()
+                            .not_null()
+                            .default(true),
+                    )
+                    .col(
+                        ColumnDef::new(Widgets::ShowAvatar)
+                            .boolean()
+                            .not_null()
+                            .default(true),
+                    )
+                    .col(
+                        ColumnDef::new(Widgets::ShowDate)
+                            .boolean()
+                            .not_null()
+                            .default(false),
+                    )
+                    .col(
+                        ColumnDef::new(Widgets::ShowSource)
+                            .boolean()
+                            .not_null()
+                            .default(false),
+                    )
+                    .col(
+                        ColumnDef::new(Widgets::ViewCount)
+                            .big_integer()
+                            .not_null()
+                            .default(0),
+                    )
+                    .col(
+                        ColumnDef::new(Widgets::ClickCount)
+                            .big_integer()
+                            .not_null()
+                            .default(0),
+                    )
+                    .col(
+                        ColumnDef::new(Widgets::CreatedAt)
+                            .timestamp_with_time_zone()
+                            .not_null()
+                            .default(Expr::current_timestamp()),
+                    )
+                    .col(
+                        ColumnDef::new(Widgets::UpdatedAt)
+                            .timestamp_with_time_zone()
+                            .not_null()
+                            .default(Expr::current_timestamp()),
+                    )
+                    .foreign_key(
+                        ForeignKey::create()
+                            .from(Widgets::Table, Widgets::ProjectId)
+                            .to(Projects::Table, Projects::Id)
+                            .on_delete(ForeignKeyAction::Cascade),
+                    )
+                    .to_owned(),
+            )
+            .await?;
+        manager
+            .create_index(
+                Index::create()
+                    .name("idx_widgets_project")
+                    .table(Widgets::Table)
+                    .col(Widgets::ProjectId)
+                    .to_owned(),
+            )
+            .await?;
+
+        // --- Import Sources ---
+        manager
+            .create_table(
+                Table::create()
+                    .table(ImportSources::Table)
+                    .col(
+                        ColumnDef::new(ImportSources::Id)
+                            .integer()
+                            .not_null()
+                            .auto_increment()
+                            .primary_key(),
+                    )
+                    .col(
+                        ColumnDef::new(ImportSources::Pid)
+                            .uuid()
+                            .not_null()
+                            .unique_key(),
+                    )
+                    .col(
+                        ColumnDef::new(ImportSources::ProjectId)
+                            .integer()
+                            .not_null(),
+                    )
+                    .col(
+                        ColumnDef::new(ImportSources::Platform)
+                            .string_len(50)
+                            .not_null(),
+                    )
+                    .col(ColumnDef::new(ImportSources::Credentials).json_binary())
+                    .col(
+                        ColumnDef::new(ImportSources::AutoSync)
+                            .boolean()
+                            .not_null()
+                            .default(false),
+                    )
+                    .col(ColumnDef::new(ImportSources::LastSyncedAt).timestamp_with_time_zone())
+                    .col(
+                        ColumnDef::new(ImportSources::SyncIntervalHours)
+                            .integer()
+                            .not_null()
+                            .default(24),
+                    )
+                    .col(
+                        ColumnDef::new(ImportSources::CreatedAt)
+                            .timestamp_with_time_zone()
+                            .not_null()
+                            .default(Expr::current_timestamp()),
+                    )
+                    .foreign_key(
+                        ForeignKey::create()
+                            .from(ImportSources::Table, ImportSources::ProjectId)
+                            .to(Projects::Table, Projects::Id)
+                            .on_delete(ForeignKeyAction::Cascade),
+                    )
+                    .to_owned(),
+            )
+            .await?;
+
+        // --- Analytics Events ---
+        manager
+            .create_table(
+                Table::create()
+                    .table(AnalyticsEvents::Table)
+                    .col(
+                        ColumnDef::new(AnalyticsEvents::Id)
+                            .big_integer()
+                            .not_null()
+                            .auto_increment()
+                            .primary_key(),
+                    )
+                    .col(
+                        ColumnDef::new(AnalyticsEvents::WidgetId)
+                            .integer()
+                            .not_null(),
+                    )
+                    .col(
+                        ColumnDef::new(AnalyticsEvents::EventType)
+                            .string_len(20)
+                            .not_null(),
+                    )
+                    .col(ColumnDef::new(AnalyticsEvents::Referrer).text())
+                    .col(ColumnDef::new(AnalyticsEvents::UserAgent).text())
+                    .col(ColumnDef::new(AnalyticsEvents::IpHash).string_len(64))
+                    .col(ColumnDef::new(AnalyticsEvents::Country).string_len(2))
+                    .col(
+                        ColumnDef::new(AnalyticsEvents::CreatedAt)
+                            .timestamp_with_time_zone()
+                            .not_null()
+                            .default(Expr::current_timestamp()),
+                    )
+                    .foreign_key(
+                        ForeignKey::create()
+                            .from(AnalyticsEvents::Table, AnalyticsEvents::WidgetId)
+                            .to(Widgets::Table, Widgets::Id)
+                            .on_delete(ForeignKeyAction::Cascade),
+                    )
+                    .to_owned(),
+            )
+            .await?;
+        manager
+            .create_index(
+                Index::create()
+                    .name("idx_analytics_widget")
+                    .table(AnalyticsEvents::Table)
+                    .col(AnalyticsEvents::WidgetId)
+                    .col(AnalyticsEvents::CreatedAt)
+                    .to_owned(),
+            )
+            .await?;
+
+        // --- API Keys ---
+        manager
+            .create_table(
+                Table::create()
+                    .table(ApiKeys::Table)
+                    .col(
+                        ColumnDef::new(ApiKeys::Id)
+                            .integer()
+                            .not_null()
+                            .auto_increment()
+                            .primary_key(),
+                    )
+                    .col(ColumnDef::new(ApiKeys::Pid).uuid().not_null().unique_key())
+                    .col(ColumnDef::new(ApiKeys::UserId).integer().not_null())
+                    .col(ColumnDef::new(ApiKeys::Name).string_len(255).not_null())
+                    .col(ColumnDef::new(ApiKeys::KeyHash).string_len(255).not_null())
+                    .col(ColumnDef::new(ApiKeys::KeyPrefix).string_len(10).not_null())
+                    .col(
+                        ColumnDef::new(ApiKeys::Scopes)
+                            .json_binary()
+                            .not_null()
+                            .default("[\"read\"]"),
+                    )
+                    .col(ColumnDef::new(ApiKeys::LastUsedAt).timestamp_with_time_zone())
+                    .col(ColumnDef::new(ApiKeys::ExpiresAt).timestamp_with_time_zone())
+                    .col(
+                        ColumnDef::new(ApiKeys::CreatedAt)
+                            .timestamp_with_time_zone()
+                            .not_null()
+                            .default(Expr::current_timestamp()),
+                    )
+                    .foreign_key(
+                        ForeignKey::create()
+                            .from(ApiKeys::Table, ApiKeys::UserId)
+                            .to(Users::Table, Users::Id)
+                            .on_delete(ForeignKeyAction::Cascade),
+                    )
+                    .to_owned(),
+            )
+            .await
+    }
+
+    async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
+        let tables = [
+            "analytics_events",
+            "api_keys",
+            "import_sources",
+            "testimonial_tags",
+            "tags",
+            "widgets",
+            "forms",
+            "testimonials",
+            "projects",
+            "users",
+        ];
+        for table in tables {
+            manager
+                .drop_table(
+                    Table::drop()
+                        .table(Alias::new(table))
+                        .if_exists()
+                        .cascade()
+                        .to_owned(),
+                )
+                .await?;
+        }
+        Ok(())
+    }
+}
+
+// --- Iden enums ---
+
+#[derive(DeriveIden)]
+enum Users {
+    Table,
+    Id,
+    Pid,
+    Email,
+    PasswordHash,
+    Name,
+    AvatarUrl,
+    OauthProvider,
+    OauthId,
+    CreatedAt,
+    UpdatedAt,
+}
+
+#[derive(DeriveIden)]
+enum Projects {
+    Table,
+    Id,
+    Pid,
+    UserId,
+    Name,
+    Slug,
+    LogoUrl,
+    WebsiteUrl,
+    CreatedAt,
+    UpdatedAt,
+}
+
+#[derive(DeriveIden)]
+enum Testimonials {
+    Table,
+    Id,
+    Pid,
+    ProjectId,
+    Type,
+    Content,
+    Rating,
+    AuthorName,
+    AuthorEmail,
+    AuthorTitle,
+    AuthorAvatarUrl,
+    AuthorCompany,
+    AuthorUrl,
+    VideoUrl,
+    VideoThumbnailUrl,
+    VideoDurationSeconds,
+    Transcription,
+    Source,
+    SourcePlatform,
+    SourceUrl,
+    SourceId,
+    Sentiment,
+    SentimentScore,
+    Language,
+    IsApproved,
+    IsFeatured,
+    CreatedAt,
+    UpdatedAt,
+}
+
+#[derive(DeriveIden)]
+enum Tags {
+    Table,
+    Id,
+    Pid,
+    ProjectId,
+    Name,
+    Color,
+}
+
+#[derive(DeriveIden)]
+enum TestimonialTags {
+    Table,
+    TestimonialId,
+    TagId,
+}
+
+#[derive(DeriveIden)]
+enum Forms {
+    Table,
+    Id,
+    Pid,
+    ProjectId,
+    Name,
+    Slug,
+    Headline,
+    Description,
+    Questions,
+    AllowVideo,
+    AllowText,
+    RequireRating,
+    LogoUrl,
+    AccentColor,
+    BackgroundColor,
+    ThankYouTitle,
+    ThankYouMessage,
+    ThankYouCtaText,
+    ThankYouCtaUrl,
+    IncentiveEnabled,
+    IncentiveDescription,
+    ShareEnabled,
+    ShareMessage,
+    IsActive,
+    SubmissionCount,
+    CreatedAt,
+    UpdatedAt,
+}
+
+#[derive(DeriveIden)]
+enum Widgets {
+    Table,
+    Id,
+    Pid,
+    ProjectId,
+    Name,
+    WidgetType,
+    TagFilter,
+    MinRating,
+    FeaturedOnly,
+    MaxTestimonials,
+    Theme,
+    AccentColor,
+    BorderRadius,
+    FontFamily,
+    CustomCss,
+    Autoplay,
+    AutoplaySpeed,
+    ShowRating,
+    ShowAvatar,
+    ShowDate,
+    ShowSource,
+    ViewCount,
+    ClickCount,
+    CreatedAt,
+    UpdatedAt,
+}
+
+#[derive(DeriveIden)]
+enum ImportSources {
+    Table,
+    Id,
+    Pid,
+    ProjectId,
+    Platform,
+    Credentials,
+    AutoSync,
+    LastSyncedAt,
+    SyncIntervalHours,
+    CreatedAt,
+}
+
+#[derive(DeriveIden)]
+enum AnalyticsEvents {
+    Table,
+    Id,
+    WidgetId,
+    EventType,
+    Referrer,
+    UserAgent,
+    IpHash,
+    Country,
+    CreatedAt,
+}
+
+#[derive(DeriveIden)]
+enum ApiKeys {
+    Table,
+    Id,
+    Pid,
+    UserId,
+    Name,
+    KeyHash,
+    KeyPrefix,
+    Scopes,
+    LastUsedAt,
+    ExpiresAt,
+    CreatedAt,
+}

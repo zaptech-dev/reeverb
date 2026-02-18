@@ -1,3 +1,5 @@
+mod m20260218_182252_convert_pks_to_serial_add_pid;
+
 mod m20260218_000001_create_users;
 mod m20260218_000002_create_projects;
 mod m20260218_000003_create_testimonials;
@@ -18,4 +20,5 @@ rapina::migrations! {
     m20260218_000007_create_import_sources,
     m20260218_000008_create_analytics_events,
     m20260218_000009_create_api_keys,
+    m20260218_182252_convert_pks_to_serial_add_pid,
 }
