@@ -76,6 +76,23 @@ jobs:
   api:
     name: API Checks
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: reeverb
+          POSTGRES_PASSWORD: secret
+          POSTGRES_DB: reeverb_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DATABASE_URL: postgres://reeverb:secret@localhost:5432/reeverb_test
+      JWT_SECRET: test-secret
     steps:
       - uses: actions/checkout@v4
         with:
@@ -85,6 +102,14 @@ jobs:
           toolchain: "1.88.0"
       - uses: Swatinem/rust-cache@v2
       - run: cargo install rapina-cli --locked
+      - run: cargo build --release
+      - name: Start server
+        run: |
+          ./target/release/reeverb &
+          for i in $(seq 1 30); do
+            curl -s http://127.0.0.1:3000/health && break
+            sleep 1
+          done
       - run: rapina openapi check
       - name: Detect breaking changes
         if: github.event_name == 'pull_request'
