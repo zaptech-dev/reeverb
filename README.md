@@ -29,7 +29,7 @@ Self-hosted alternative to Senja, Testimonial.to, and Famewall.
 
 ### Prerequisites
 
-- Rust 1.85+
+- Rust 1.88+
 - PostgreSQL 16+
 - Docker (optional, for self-hosting)
 
