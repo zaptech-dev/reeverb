@@ -3,7 +3,21 @@ use rapina::middleware::RequestLogMiddleware;
 use rapina::prelude::*;
 use rapina::schemars;
 
-mod migrations;
+use reeverb::api::v1::auth;
+
+#[derive(Clone, Config)]
+struct AppConfig {
+    #[env = "DATABASE_URL"]
+    database_url: String,
+
+    #[env = "HOST"]
+    #[default = "0.0.0.0"]
+    host: String,
+
+    #[env = "PORT"]
+    #[default = "3000"]
+    port: u16,
+}
 
 #[derive(Serialize, JsonSchema)]
 struct HealthResponse {
@@ -24,19 +38,32 @@ async fn health() -> Json<HealthResponse> {
 async fn main() -> std::io::Result<()> {
     dotenvy::dotenv().ok();
 
-    let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
+    let config = AppConfig::from_env().expect("missing required config");
+    let auth_config = AuthConfig::from_env().expect("JWT_SECRET must be set");
 
-    let router = Router::new().get("/health", health);
+    let router = Router::new()
+        .get("/health", health)
+        .group("/api/v1/auth", auth::routes());
 
-    Rapina::new()
+    let mut app = Rapina::new()
         .with_tracing(TracingConfig::new())
-        .openapi("Reeverb API", env!("CARGO_PKG_VERSION"))
+        .with_auth(auth_config.clone())
+        .public_route("GET", "/health");
+
+    for (method, path) in auth::PUBLIC_ROUTES {
+        app = app.public_route(method, path);
+    }
+
+    let addr = format!("{}:{}", config.host, config.port);
+
+    app.openapi("Reeverb API", env!("CARGO_PKG_VERSION"))
         .middleware(RequestLogMiddleware::new())
-        .with_database(DatabaseConfig::new(&database_url))
+        .state(auth_config)
+        .with_database(DatabaseConfig::new(&config.database_url))
         .await?
-        .run_migrations::<migrations::Migrator>()
+        .run_migrations::<reeverb::db::migrations::Migrator>()
         .await?
         .router(router)
-        .listen("0.0.0.0:3000")
+        .listen(&addr)
         .await
 }
