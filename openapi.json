@@ -801,6 +801,1825 @@
         "summary": "Update project"
       }
     },
+    "/api/v1/projects/{id}/tags": {
+      "get": {
+        "operationId": "list_tags",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$defs": {
+                    "TagResponse": {
+                      "properties": {
+                        "color": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "id": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "project_id": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "project_id",
+                        "name"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "items": {
+                    "$ref": "#/$defs/TagResponse"
+                  },
+                  "title": "Array_of_TagResponse",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Success"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "User does not own this project"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Tag not found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Tag name already exists in this project"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal server error"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Error response"
+          }
+        },
+        "summary": "List tags"
+      },
+      "post": {
+        "operationId": "create_tag",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "User does not own this project"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Tag not found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Tag name already exists in this project"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal server error"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Error response"
+          }
+        },
+        "summary": "Create tag"
+      }
+    },
+    "/api/v1/projects/{id}/testimonials": {
+      "get": {
+        "operationId": "list_testimonials",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$defs": {
+                    "TagResponse": {
+                      "properties": {
+                        "color": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "id": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "project_id": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "project_id",
+                        "name"
+                      ],
+                      "type": "object"
+                    },
+                    "TestimonialResponse": {
+                      "properties": {
+                        "author_avatar_url": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "author_company": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "author_email": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "author_name": {
+                          "type": "string"
+                        },
+                        "author_title": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "author_url": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "content": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "created_at": {
+                          "type": "string"
+                        },
+                        "id": {
+                          "type": "string"
+                        },
+                        "is_approved": {
+                          "type": "boolean"
+                        },
+                        "is_featured": {
+                          "type": "boolean"
+                        },
+                        "language": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "project_id": {
+                          "type": "string"
+                        },
+                        "rating": {
+                          "format": "int16",
+                          "maximum": 32767,
+                          "minimum": -32768,
+                          "type": [
+                            "integer",
+                            "null"
+                          ]
+                        },
+                        "sentiment": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "sentiment_score": {
+                          "format": "float",
+                          "type": [
+                            "number",
+                            "null"
+                          ]
+                        },
+                        "source": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "source_id": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "source_platform": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "source_url": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "tags": {
+                          "items": {
+                            "$ref": "#/$defs/TagResponse"
+                          },
+                          "type": "array"
+                        },
+                        "transcription": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "type": {
+                          "type": "string"
+                        },
+                        "updated_at": {
+                          "type": "string"
+                        },
+                        "video_duration_seconds": {
+                          "format": "int32",
+                          "type": [
+                            "integer",
+                            "null"
+                          ]
+                        },
+                        "video_thumbnail_url": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "video_url": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "project_id",
+                        "type",
+                        "author_name",
+                        "is_approved",
+                        "is_featured",
+                        "tags",
+                        "created_at",
+                        "updated_at"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "items": {
+                    "$ref": "#/$defs/TestimonialResponse"
+                  },
+                  "title": "Array_of_TestimonialResponse",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Success"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "User does not own this project"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Testimonial not found"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal server error"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Error response"
+          }
+        },
+        "summary": "List testimonials"
+      },
+      "post": {
+        "operationId": "create_testimonial",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "User does not own this project"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Testimonial not found"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal server error"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Error response"
+          }
+        },
+        "summary": "Create testimonial"
+      }
+    },
+    "/api/v1/tags/{id}": {
+      "delete": {
+        "operationId": "delete_tag",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "User does not own this project"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Tag not found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Tag name already exists in this project"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal server error"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Error response"
+          }
+        },
+        "summary": "Delete tag"
+      },
+      "put": {
+        "operationId": "update_tag",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "properties": {
+                    "color": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "id": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "project_id": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "project_id",
+                    "name"
+                  ],
+                  "title": "TagResponse",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Success"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "User does not own this project"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Tag not found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Tag name already exists in this project"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal server error"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Error response"
+          }
+        },
+        "summary": "Update tag"
+      }
+    },
+    "/api/v1/testimonials/{id}": {
+      "delete": {
+        "operationId": "delete_testimonial",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "User does not own this project"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Testimonial not found"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal server error"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Error response"
+          }
+        },
+        "summary": "Delete testimonial"
+      },
+      "get": {
+        "operationId": "get_testimonial",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$defs": {
+                    "TagResponse": {
+                      "properties": {
+                        "color": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "id": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "project_id": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "project_id",
+                        "name"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "properties": {
+                    "author_avatar_url": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "author_company": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "author_email": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "author_name": {
+                      "type": "string"
+                    },
+                    "author_title": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "author_url": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "content": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "created_at": {
+                      "type": "string"
+                    },
+                    "id": {
+                      "type": "string"
+                    },
+                    "is_approved": {
+                      "type": "boolean"
+                    },
+                    "is_featured": {
+                      "type": "boolean"
+                    },
+                    "language": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "project_id": {
+                      "type": "string"
+                    },
+                    "rating": {
+                      "format": "int16",
+                      "maximum": 32767,
+                      "minimum": -32768,
+                      "type": [
+                        "integer",
+                        "null"
+                      ]
+                    },
+                    "sentiment": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "sentiment_score": {
+                      "format": "float",
+                      "type": [
+                        "number",
+                        "null"
+                      ]
+                    },
+                    "source": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "source_id": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "source_platform": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "source_url": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "tags": {
+                      "items": {
+                        "$ref": "#/$defs/TagResponse"
+                      },
+                      "type": "array"
+                    },
+                    "transcription": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "updated_at": {
+                      "type": "string"
+                    },
+                    "video_duration_seconds": {
+                      "format": "int32",
+                      "type": [
+                        "integer",
+                        "null"
+                      ]
+                    },
+                    "video_thumbnail_url": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "video_url": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "project_id",
+                    "type",
+                    "author_name",
+                    "is_approved",
+                    "is_featured",
+                    "tags",
+                    "created_at",
+                    "updated_at"
+                  ],
+                  "title": "TestimonialResponse",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Success"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "User does not own this project"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Testimonial not found"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal server error"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Error response"
+          }
+        },
+        "summary": "Get testimonial"
+      },
+      "put": {
+        "operationId": "update_testimonial",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$defs": {
+                    "TagResponse": {
+                      "properties": {
+                        "color": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "id": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "project_id": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "project_id",
+                        "name"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "properties": {
+                    "author_avatar_url": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "author_company": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "author_email": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "author_name": {
+                      "type": "string"
+                    },
+                    "author_title": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "author_url": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "content": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "created_at": {
+                      "type": "string"
+                    },
+                    "id": {
+                      "type": "string"
+                    },
+                    "is_approved": {
+                      "type": "boolean"
+                    },
+                    "is_featured": {
+                      "type": "boolean"
+                    },
+                    "language": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "project_id": {
+                      "type": "string"
+                    },
+                    "rating": {
+                      "format": "int16",
+                      "maximum": 32767,
+                      "minimum": -32768,
+                      "type": [
+                        "integer",
+                        "null"
+                      ]
+                    },
+                    "sentiment": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "sentiment_score": {
+                      "format": "float",
+                      "type": [
+                        "number",
+                        "null"
+                      ]
+                    },
+                    "source": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "source_id": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "source_platform": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "source_url": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "tags": {
+                      "items": {
+                        "$ref": "#/$defs/TagResponse"
+                      },
+                      "type": "array"
+                    },
+                    "transcription": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "updated_at": {
+                      "type": "string"
+                    },
+                    "video_duration_seconds": {
+                      "format": "int32",
+                      "type": [
+                        "integer",
+                        "null"
+                      ]
+                    },
+                    "video_thumbnail_url": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "video_url": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "project_id",
+                    "type",
+                    "author_name",
+                    "is_approved",
+                    "is_featured",
+                    "tags",
+                    "created_at",
+                    "updated_at"
+                  ],
+                  "title": "TestimonialResponse",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Success"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "User does not own this project"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Testimonial not found"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal server error"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Error response"
+          }
+        },
+        "summary": "Update testimonial"
+      }
+    },
+    "/api/v1/testimonials/{id}/approve": {
+      "post": {
+        "operationId": "approve_testimonial",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$defs": {
+                    "TagResponse": {
+                      "properties": {
+                        "color": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "id": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "project_id": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "project_id",
+                        "name"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "properties": {
+                    "author_avatar_url": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "author_company": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "author_email": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "author_name": {
+                      "type": "string"
+                    },
+                    "author_title": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "author_url": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "content": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "created_at": {
+                      "type": "string"
+                    },
+                    "id": {
+                      "type": "string"
+                    },
+                    "is_approved": {
+                      "type": "boolean"
+                    },
+                    "is_featured": {
+                      "type": "boolean"
+                    },
+                    "language": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "project_id": {
+                      "type": "string"
+                    },
+                    "rating": {
+                      "format": "int16",
+                      "maximum": 32767,
+                      "minimum": -32768,
+                      "type": [
+                        "integer",
+                        "null"
+                      ]
+                    },
+                    "sentiment": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "sentiment_score": {
+                      "format": "float",
+                      "type": [
+                        "number",
+                        "null"
+                      ]
+                    },
+                    "source": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "source_id": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "source_platform": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "source_url": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "tags": {
+                      "items": {
+                        "$ref": "#/$defs/TagResponse"
+                      },
+                      "type": "array"
+                    },
+                    "transcription": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "updated_at": {
+                      "type": "string"
+                    },
+                    "video_duration_seconds": {
+                      "format": "int32",
+                      "type": [
+                        "integer",
+                        "null"
+                      ]
+                    },
+                    "video_thumbnail_url": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "video_url": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "project_id",
+                    "type",
+                    "author_name",
+                    "is_approved",
+                    "is_featured",
+                    "tags",
+                    "created_at",
+                    "updated_at"
+                  ],
+                  "title": "TestimonialResponse",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Success"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "User does not own this project"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Testimonial not found"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal server error"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Error response"
+          }
+        },
+        "summary": "Approve testimonial"
+      }
+    },
+    "/api/v1/testimonials/{id}/feature": {
+      "post": {
+        "operationId": "feature_testimonial",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$defs": {
+                    "TagResponse": {
+                      "properties": {
+                        "color": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "id": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "project_id": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "project_id",
+                        "name"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "properties": {
+                    "author_avatar_url": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "author_company": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "author_email": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "author_name": {
+                      "type": "string"
+                    },
+                    "author_title": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "author_url": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "content": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "created_at": {
+                      "type": "string"
+                    },
+                    "id": {
+                      "type": "string"
+                    },
+                    "is_approved": {
+                      "type": "boolean"
+                    },
+                    "is_featured": {
+                      "type": "boolean"
+                    },
+                    "language": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "project_id": {
+                      "type": "string"
+                    },
+                    "rating": {
+                      "format": "int16",
+                      "maximum": 32767,
+                      "minimum": -32768,
+                      "type": [
+                        "integer",
+                        "null"
+                      ]
+                    },
+                    "sentiment": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "sentiment_score": {
+                      "format": "float",
+                      "type": [
+                        "number",
+                        "null"
+                      ]
+                    },
+                    "source": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "source_id": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "source_platform": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "source_url": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "tags": {
+                      "items": {
+                        "$ref": "#/$defs/TagResponse"
+                      },
+                      "type": "array"
+                    },
+                    "transcription": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "updated_at": {
+                      "type": "string"
+                    },
+                    "video_duration_seconds": {
+                      "format": "int32",
+                      "type": [
+                        "integer",
+                        "null"
+                      ]
+                    },
+                    "video_thumbnail_url": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "video_url": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "project_id",
+                    "type",
+                    "author_name",
+                    "is_approved",
+                    "is_featured",
+                    "tags",
+                    "created_at",
+                    "updated_at"
+                  ],
+                  "title": "TestimonialResponse",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Success"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "User does not own this project"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Testimonial not found"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal server error"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Error response"
+          }
+        },
+        "summary": "Feature testimonial"
+      }
+    },
+    "/api/v1/testimonials/{id}/tags": {
+      "put": {
+        "operationId": "set_testimonial_tags",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$defs": {
+                    "TagResponse": {
+                      "properties": {
+                        "color": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "id": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "project_id": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "project_id",
+                        "name"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "properties": {
+                    "tags": {
+                      "items": {
+                        "$ref": "#/$defs/TagResponse"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "required": [
+                    "tags"
+                  ],
+                  "title": "TestimonialTagsResponse",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Success"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "User does not own this project"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Tag not found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Tag name already exists in this project"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal server error"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Error response"
+          }
+        },
+        "summary": "Set testimonial tags"
+      }
+    },
     "/health": {
       "get": {
         "operationId": "health",

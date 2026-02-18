@@ -3,6 +3,8 @@ use rapina::prelude::*;
 use rapina::sea_orm::{ActiveModelTrait, ColumnTrait, EntityTrait, QueryFilter, Set};
 use uuid::Uuid;
 
+use crate::api::v1::tags::dto::TagResponse;
+use crate::api::v1::tags::handlers::{load_tags_for_testimonial, load_tags_for_testimonials};
 use crate::db::entities::project::{Column as ProjectColumn, Entity as Project};
 use crate::db::entities::testimonial::{ActiveModel, Column, Entity as Testimonial};
 use crate::db::entities::user::{Column as UserColumn, Entity as User};
@@ -15,6 +17,7 @@ use super::error::TestimonialError;
 fn to_response(
     t: crate::db::entities::testimonial::Model,
     project_pid: &Uuid,
+    tags: Vec<TagResponse>,
 ) -> TestimonialResponse {
     TestimonialResponse {
         id: t.pid.to_string(),
@@ -41,6 +44,7 @@ fn to_response(
         language: t.language,
         is_approved: t.is_approved,
         is_featured: t.is_featured,
+        tags,
         created_at: t.created_at.to_rfc3339(),
         updated_at: t.updated_at.to_rfc3339(),
     }
@@ -95,9 +99,15 @@ pub async fn list_testimonials(
 
     let testimonials = q.all(db.conn()).await.map_err(DbError)?;
 
+    let testimonial_ids: Vec<i32> = testimonials.iter().map(|t| t.id).collect();
+    let mut tags_map = load_tags_for_testimonials(&db, &testimonial_ids, &project.pid).await?;
+
     let response: Vec<TestimonialResponse> = testimonials
         .into_iter()
-        .map(|t| to_response(t, &project.pid))
+        .map(|t| {
+            let tags = tags_map.remove(&t.id).unwrap_or_default();
+            to_response(t, &project.pid, tags)
+        })
         .collect();
 
     Ok(Json(response))
@@ -158,7 +168,7 @@ pub async fn create_testimonial(
 
     Ok((
         StatusCode::CREATED,
-        Json(to_response(testimonial, &project.pid)),
+        Json(to_response(testimonial, &project.pid, vec![])),
     ))
 }
 
@@ -190,7 +200,8 @@ pub async fn get_testimonial(
         return Err(TestimonialError::Forbidden.into_api_error());
     }
 
-    Ok(Json(to_response(testimonial, &project.pid)))
+    let tags = load_tags_for_testimonial(&db, testimonial.id, &project.pid).await?;
+    Ok(Json(to_response(testimonial, &project.pid, tags)))
 }
 
 #[put("/api/v1/testimonials/:id")]
@@ -294,7 +305,8 @@ pub async fn update_testimonial(
 
     let updated = active.update(db.conn()).await.map_err(DbError)?;
 
-    Ok(Json(to_response(updated, &project.pid)))
+    let tags = load_tags_for_testimonial(&db, updated.id, &project.pid).await?;
+    Ok(Json(to_response(updated, &project.pid, tags)))
 }
 
 #[delete("/api/v1/testimonials/:id")]
@@ -362,12 +374,14 @@ pub async fn approve_testimonial(
     }
 
     let new_value = !testimonial.is_approved;
+    let testimonial_id = testimonial.id;
     let mut active: ActiveModel = testimonial.into();
     active.is_approved = Set(new_value);
 
     let updated = active.update(db.conn()).await.map_err(DbError)?;
 
-    Ok(Json(to_response(updated, &project.pid)))
+    let tags = load_tags_for_testimonial(&db, testimonial_id, &project.pid).await?;
+    Ok(Json(to_response(updated, &project.pid, tags)))
 }
 
 #[post("/api/v1/testimonials/:id/feature")]
@@ -399,10 +413,12 @@ pub async fn feature_testimonial(
     }
 
     let new_value = !testimonial.is_featured;
+    let testimonial_id = testimonial.id;
     let mut active: ActiveModel = testimonial.into();
     active.is_featured = Set(new_value);
 
     let updated = active.update(db.conn()).await.map_err(DbError)?;
 
-    Ok(Json(to_response(updated, &project.pid)))
+    let tags = load_tags_for_testimonial(&db, testimonial_id, &project.pid).await?;
+    Ok(Json(to_response(updated, &project.pid, tags)))
 }
