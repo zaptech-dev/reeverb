@@ -113,4 +113,6 @@ jobs:
       - run: rapina openapi check
       - name: Detect breaking changes
         if: github.event_name == 'pull_request'
-        run: rapina openapi diff --base main
+        run: |
+          git fetch origin main
+          rapina openapi diff --base origin/main
