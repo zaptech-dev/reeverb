@@ -19,29 +19,20 @@ impl MigrationTrait for Migration {
                             .not_null()
                             .primary_key(),
                     )
-                    .col(
-                        ColumnDef::new(ImportSources::ProjectId)
-                            .uuid()
-                            .not_null(),
-                    )
+                    .col(ColumnDef::new(ImportSources::ProjectId).uuid().not_null())
                     .col(
                         ColumnDef::new(ImportSources::Platform)
                             .string_len(50)
                             .not_null(),
                     )
-                    .col(
-                        ColumnDef::new(ImportSources::Credentials).json_binary(),
-                    )
+                    .col(ColumnDef::new(ImportSources::Credentials).json_binary())
                     .col(
                         ColumnDef::new(ImportSources::AutoSync)
                             .boolean()
                             .not_null()
                             .default(false),
                     )
-                    .col(
-                        ColumnDef::new(ImportSources::LastSyncedAt)
-                            .timestamp_with_time_zone(),
-                    )
+                    .col(ColumnDef::new(ImportSources::LastSyncedAt).timestamp_with_time_zone())
                     .col(
                         ColumnDef::new(ImportSources::SyncIntervalHours)
                             .integer()

@@ -20,11 +20,7 @@ impl MigrationTrait for Migration {
                             .auto_increment()
                             .primary_key(),
                     )
-                    .col(
-                        ColumnDef::new(AnalyticsEvents::WidgetId)
-                            .uuid()
-                            .not_null(),
-                    )
+                    .col(ColumnDef::new(AnalyticsEvents::WidgetId).uuid().not_null())
                     .col(
                         ColumnDef::new(AnalyticsEvents::EventType)
                             .string_len(20)
@@ -32,12 +28,8 @@ impl MigrationTrait for Migration {
                     )
                     .col(ColumnDef::new(AnalyticsEvents::Referrer).text())
                     .col(ColumnDef::new(AnalyticsEvents::UserAgent).text())
-                    .col(
-                        ColumnDef::new(AnalyticsEvents::IpHash).string_len(64),
-                    )
-                    .col(
-                        ColumnDef::new(AnalyticsEvents::Country).string_len(2),
-                    )
+                    .col(ColumnDef::new(AnalyticsEvents::IpHash).string_len(64))
+                    .col(ColumnDef::new(AnalyticsEvents::Country).string_len(2))
                     .col(
                         ColumnDef::new(AnalyticsEvents::CreatedAt)
                             .timestamp_with_time_zone()
@@ -46,10 +38,7 @@ impl MigrationTrait for Migration {
                     )
                     .foreign_key(
                         ForeignKey::create()
-                            .from(
-                                AnalyticsEvents::Table,
-                                AnalyticsEvents::WidgetId,
-                            )
+                            .from(AnalyticsEvents::Table, AnalyticsEvents::WidgetId)
                             .to(Widgets::Table, Widgets::Id)
                             .on_delete(ForeignKeyAction::Cascade),
                     )
@@ -82,9 +71,7 @@ impl MigrationTrait for Migration {
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         manager
-            .drop_table(
-                Table::drop().table(AnalyticsEvents::Table).to_owned(),
-            )
+            .drop_table(Table::drop().table(AnalyticsEvents::Table).to_owned())
             .await
     }
 }

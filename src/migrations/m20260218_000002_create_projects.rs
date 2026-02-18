@@ -13,18 +13,9 @@ impl MigrationTrait for Migration {
             .create_table(
                 Table::create()
                     .table(Projects::Table)
-                    .col(
-                        ColumnDef::new(Projects::Id)
-                            .uuid()
-                            .not_null()
-                            .primary_key(),
-                    )
+                    .col(ColumnDef::new(Projects::Id).uuid().not_null().primary_key())
                     .col(ColumnDef::new(Projects::UserId).uuid().not_null())
-                    .col(
-                        ColumnDef::new(Projects::Name)
-                            .string_len(255)
-                            .not_null(),
-                    )
+                    .col(ColumnDef::new(Projects::Name).string_len(255).not_null())
                     .col(
                         ColumnDef::new(Projects::Slug)
                             .string_len(255)

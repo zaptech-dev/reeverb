@@ -16,11 +16,7 @@ impl MigrationTrait for Migration {
                     .table(Tags::Table)
                     .col(ColumnDef::new(Tags::Id).uuid().not_null().primary_key())
                     .col(ColumnDef::new(Tags::ProjectId).uuid().not_null())
-                    .col(
-                        ColumnDef::new(Tags::Name)
-                            .string_len(100)
-                            .not_null(),
-                    )
+                    .col(ColumnDef::new(Tags::Name).string_len(100).not_null())
                     .col(ColumnDef::new(Tags::Color).string_len(7))
                     .foreign_key(
                         ForeignKey::create()
@@ -54,11 +50,7 @@ impl MigrationTrait for Migration {
                             .uuid()
                             .not_null(),
                     )
-                    .col(
-                        ColumnDef::new(TestimonialTags::TagId)
-                            .uuid()
-                            .not_null(),
-                    )
+                    .col(ColumnDef::new(TestimonialTags::TagId).uuid().not_null())
                     .primary_key(
                         Index::create()
                             .col(TestimonialTags::TestimonialId)
@@ -66,10 +58,7 @@ impl MigrationTrait for Migration {
                     )
                     .foreign_key(
                         ForeignKey::create()
-                            .from(
-                                TestimonialTags::Table,
-                                TestimonialTags::TestimonialId,
-                            )
+                            .from(TestimonialTags::Table, TestimonialTags::TestimonialId)
                             .to(Testimonials::Table, Testimonials::Id)
                             .on_delete(ForeignKeyAction::Cascade),
                     )
@@ -86,9 +75,7 @@ impl MigrationTrait for Migration {
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         manager
-            .drop_table(
-                Table::drop().table(TestimonialTags::Table).to_owned(),
-            )
+            .drop_table(Table::drop().table(TestimonialTags::Table).to_owned())
             .await?;
         manager
             .drop_table(Table::drop().table(Tags::Table).to_owned())

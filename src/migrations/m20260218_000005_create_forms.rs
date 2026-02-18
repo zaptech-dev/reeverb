@@ -13,18 +13,9 @@ impl MigrationTrait for Migration {
             .create_table(
                 Table::create()
                     .table(Forms::Table)
-                    .col(
-                        ColumnDef::new(Forms::Id)
-                            .uuid()
-                            .not_null()
-                            .primary_key(),
-                    )
+                    .col(ColumnDef::new(Forms::Id).uuid().not_null().primary_key())
                     .col(ColumnDef::new(Forms::ProjectId).uuid().not_null())
-                    .col(
-                        ColumnDef::new(Forms::Name)
-                            .string_len(255)
-                            .not_null(),
-                    )
+                    .col(ColumnDef::new(Forms::Name).string_len(255).not_null())
                     .col(
                         ColumnDef::new(Forms::Slug)
                             .string_len(255)
@@ -79,9 +70,7 @@ impl MigrationTrait for Migration {
                             .default("Thank you!"),
                     )
                     .col(ColumnDef::new(Forms::ThankYouMessage).text())
-                    .col(
-                        ColumnDef::new(Forms::ThankYouCtaText).string_len(255),
-                    )
+                    .col(ColumnDef::new(Forms::ThankYouCtaText).string_len(255))
                     .col(ColumnDef::new(Forms::ThankYouCtaUrl).text())
                     // Incentives
                     .col(

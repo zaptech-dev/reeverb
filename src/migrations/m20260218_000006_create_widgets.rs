@@ -13,18 +13,9 @@ impl MigrationTrait for Migration {
             .create_table(
                 Table::create()
                     .table(Widgets::Table)
-                    .col(
-                        ColumnDef::new(Widgets::Id)
-                            .uuid()
-                            .not_null()
-                            .primary_key(),
-                    )
+                    .col(ColumnDef::new(Widgets::Id).uuid().not_null().primary_key())
                     .col(ColumnDef::new(Widgets::ProjectId).uuid().not_null())
-                    .col(
-                        ColumnDef::new(Widgets::Name)
-                            .string_len(255)
-                            .not_null(),
-                    )
+                    .col(ColumnDef::new(Widgets::Name).string_len(255).not_null())
                     // Type
                     .col(
                         ColumnDef::new(Widgets::WidgetType)

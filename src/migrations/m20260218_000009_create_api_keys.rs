@@ -13,42 +13,19 @@ impl MigrationTrait for Migration {
             .create_table(
                 Table::create()
                     .table(ApiKeys::Table)
-                    .col(
-                        ColumnDef::new(ApiKeys::Id)
-                            .uuid()
-                            .not_null()
-                            .primary_key(),
-                    )
+                    .col(ColumnDef::new(ApiKeys::Id).uuid().not_null().primary_key())
                     .col(ColumnDef::new(ApiKeys::UserId).uuid().not_null())
-                    .col(
-                        ColumnDef::new(ApiKeys::Name)
-                            .string_len(255)
-                            .not_null(),
-                    )
-                    .col(
-                        ColumnDef::new(ApiKeys::KeyHash)
-                            .string_len(255)
-                            .not_null(),
-                    )
-                    .col(
-                        ColumnDef::new(ApiKeys::KeyPrefix)
-                            .string_len(10)
-                            .not_null(),
-                    )
+                    .col(ColumnDef::new(ApiKeys::Name).string_len(255).not_null())
+                    .col(ColumnDef::new(ApiKeys::KeyHash).string_len(255).not_null())
+                    .col(ColumnDef::new(ApiKeys::KeyPrefix).string_len(10).not_null())
                     .col(
                         ColumnDef::new(ApiKeys::Scopes)
                             .json_binary()
                             .not_null()
                             .default("[\"read\"]"),
                     )
-                    .col(
-                        ColumnDef::new(ApiKeys::LastUsedAt)
-                            .timestamp_with_time_zone(),
-                    )
-                    .col(
-                        ColumnDef::new(ApiKeys::ExpiresAt)
-                            .timestamp_with_time_zone(),
-                    )
+                    .col(ColumnDef::new(ApiKeys::LastUsedAt).timestamp_with_time_zone())
+                    .col(ColumnDef::new(ApiKeys::ExpiresAt).timestamp_with_time_zone())
                     .col(
                         ColumnDef::new(ApiKeys::CreatedAt)
                             .timestamp_with_time_zone()

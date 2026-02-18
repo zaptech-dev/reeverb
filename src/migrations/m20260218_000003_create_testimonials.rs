@@ -19,11 +19,7 @@ impl MigrationTrait for Migration {
                             .not_null()
                             .primary_key(),
                     )
-                    .col(
-                        ColumnDef::new(Testimonials::ProjectId)
-                            .uuid()
-                            .not_null(),
-                    )
+                    .col(ColumnDef::new(Testimonials::ProjectId).uuid().not_null())
                     // Content
                     .col(
                         ColumnDef::new(Testimonials::Type)
@@ -39,25 +35,15 @@ impl MigrationTrait for Migration {
                             .string_len(255)
                             .not_null(),
                     )
-                    .col(
-                        ColumnDef::new(Testimonials::AuthorEmail).string_len(255),
-                    )
-                    .col(
-                        ColumnDef::new(Testimonials::AuthorTitle).string_len(255),
-                    )
+                    .col(ColumnDef::new(Testimonials::AuthorEmail).string_len(255))
+                    .col(ColumnDef::new(Testimonials::AuthorTitle).string_len(255))
                     .col(ColumnDef::new(Testimonials::AuthorAvatarUrl).text())
-                    .col(
-                        ColumnDef::new(Testimonials::AuthorCompany)
-                            .string_len(255),
-                    )
+                    .col(ColumnDef::new(Testimonials::AuthorCompany).string_len(255))
                     .col(ColumnDef::new(Testimonials::AuthorUrl).text())
                     // Media
                     .col(ColumnDef::new(Testimonials::VideoUrl).text())
                     .col(ColumnDef::new(Testimonials::VideoThumbnailUrl).text())
-                    .col(
-                        ColumnDef::new(Testimonials::VideoDurationSeconds)
-                            .integer(),
-                    )
+                    .col(ColumnDef::new(Testimonials::VideoDurationSeconds).integer())
                     .col(ColumnDef::new(Testimonials::Transcription).text())
                     // Source
                     .col(
@@ -65,22 +51,13 @@ impl MigrationTrait for Migration {
                             .string_len(50)
                             .default("form"),
                     )
-                    .col(
-                        ColumnDef::new(Testimonials::SourcePlatform)
-                            .string_len(50),
-                    )
+                    .col(ColumnDef::new(Testimonials::SourcePlatform).string_len(50))
                     .col(ColumnDef::new(Testimonials::SourceUrl).text())
-                    .col(
-                        ColumnDef::new(Testimonials::SourceId).string_len(255),
-                    )
+                    .col(ColumnDef::new(Testimonials::SourceId).string_len(255))
                     // Metadata
-                    .col(
-                        ColumnDef::new(Testimonials::Sentiment).string_len(20),
-                    )
+                    .col(ColumnDef::new(Testimonials::Sentiment).string_len(20))
                     .col(ColumnDef::new(Testimonials::SentimentScore).float())
-                    .col(
-                        ColumnDef::new(Testimonials::Language).string_len(10),
-                    )
+                    .col(ColumnDef::new(Testimonials::Language).string_len(10))
                     .col(
                         ColumnDef::new(Testimonials::IsApproved)
                             .boolean()
