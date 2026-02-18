@@ -82,6 +82,6 @@ jobs:
         with:
           toolchain: "1.88.0"
       - uses: Swatinem/rust-cache@v2
-      - run: cargo install rapina --locked
+      - run: cargo install rapina-cli --locked
       - run: rapina openapi check
       - run: rapina doctor

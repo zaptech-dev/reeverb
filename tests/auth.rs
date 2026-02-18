@@ -1,16 +1,15 @@
-use std::sync::Once;
-
 use rapina::auth::{AuthMiddleware, PublicRoutes};
 use rapina::database::DatabaseConfig;
 use rapina::prelude::*;
 use rapina::testing::TestClient;
 use serde_json::json;
+use tokio::sync::OnceCell;
 use uuid::Uuid;
 
 use reeverb::api::v1::auth;
 use reeverb::db::migrations::Migrator;
 
-static MIGRATIONS: Once = Once::new();
+static MIGRATIONS: OnceCell<()> = OnceCell::const_new();
 
 fn database_url() -> String {
     dotenvy::dotenv().ok();
@@ -18,26 +17,17 @@ fn database_url() -> String {
 }
 
 async fn run_migrations_once() {
-    let needs_migration = std::sync::Arc::new(tokio::sync::Notify::new());
-    let done = needs_migration.clone();
+    MIGRATIONS
+        .get_or_init(|| async {
+            let config = DatabaseConfig::new(database_url());
+            let conn = config.connect().await.expect("failed to connect");
 
-    let mut ran = false;
-    MIGRATIONS.call_once(|| {
-        ran = true;
-    });
-
-    if ran {
-        let url = database_url();
-        let config = DatabaseConfig::new(&url);
-        let conn = config.connect().await.expect("failed to connect");
-
-        use rapina::sea_orm_migration::MigratorTrait;
-        Migrator::up(&conn, None)
-            .await
-            .expect("failed to run migrations");
-
-        done.notify_waiters();
-    }
+            use rapina::sea_orm_migration::MigratorTrait;
+            Migrator::up(&conn, None)
+                .await
+                .expect("failed to run migrations");
+        })
+        .await;
 }
 
 async fn setup() -> TestClient {
