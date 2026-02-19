@@ -6,7 +6,7 @@ use crate::api;
 
 #[derive(Clone, Serialize, Deserialize)]
 struct Project {
-    pid: String,
+    id: String,
     name: String,
     slug: String,
 }
