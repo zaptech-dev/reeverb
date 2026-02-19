@@ -7,6 +7,7 @@ use reeverb::api::v1::auth;
 use reeverb::api::v1::projects;
 use reeverb::api::v1::tags;
 use reeverb::api::v1::testimonials;
+use reeverb::static_files::DashboardMiddleware;
 
 #[derive(Clone, Config)]
 struct AppConfig {
@@ -66,6 +67,7 @@ async fn main() -> std::io::Result<()> {
     let addr = format!("{}:{}", config.host, config.port);
 
     app.openapi("Reeverb API", env!("CARGO_PKG_VERSION"))
+        .middleware(DashboardMiddleware)
         .middleware(RequestLogMiddleware::new())
         .state(auth_config)
         .with_database(DatabaseConfig::new(&config.database_url))

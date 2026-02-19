@@ -2,3 +2,5 @@
 .env
 *.db
 *.db-journal
+dist/
+node_modules/
