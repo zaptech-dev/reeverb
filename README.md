@@ -12,7 +12,7 @@ Early development. The foundation is in place — auth, projects, testimonials, 
 
 | Layer | Technology |
 |-------|-----------|
-| Backend | [Rapina](https://github.com/arferreira/rapina) (Rust web framework) |
+| Backend | [Rapina](https://userapina.com) (Rust web framework) |
 | Frontend | [Leptos](https://leptos.dev) (Rust/WASM, CSR) |
 | Database | PostgreSQL via SeaORM |
 | Auth | JWT (email/password) |
