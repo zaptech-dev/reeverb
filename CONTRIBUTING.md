@@ -5,11 +5,15 @@ Thanks for your interest in contributing. Here's how to get started.
 ## Setup
 
 1. Fork the repo and clone your fork
-2. Install Rust 1.85+ via [rustup](https://rustup.rs)
-3. Install PostgreSQL 16+ (or use Docker: `docker compose up db -d`)
-4. Copy `.env.example` to `.env` and configure your database
-5. Run `cargo run` to start the server
-6. Run `cargo test` to run the test suite
+2. In the root directory run `git remote add upstream https://github.com/zaptech-dev/reeverb`
+3. Install Rust 1.85+ via [rustup](https://rustup.rs)
+4. Install PostgreSQL 16+ (or use Docker: `docker compose up db -d`)
+5. Copy `.env.example` to `.env` and configure your database
+6. Run `cargo install trunk`
+7. Run `rustup target add wasm32-unknown-unknown`
+8. `cd` into `reeverb/crates/dashboard` and run `trunk build`
+9. Go back to the root directory and run `cargo run` to start the server
+10. Run `cargo test` to run the test suite
 
 ## Pull Requests
 
